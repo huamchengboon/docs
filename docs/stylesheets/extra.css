@@ -388,6 +388,36 @@ modifications */
   color: var(--md-accent-fg-color);
 }
 
+/* Guide cards on the topic pages */
+.md-typeset .grid.cards.guide-cards > ul > li {
+  border-top: 3px solid var(--md-accent-fg-color);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.md-typeset .grid.cards.guide-cards > ul > li:hover {
+  transform: translateY(-2px);
+}
+.md-typeset .grid.cards.guide-cards .lg {
+  color: var(--md-accent-fg-color);
+}
+.md-typeset .grid.cards.guide-cards p:has(.tag) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35em;
+}
+.md-typeset .grid.cards.guide-cards a.card-main {
+  display: inline-block;
+  font-weight: 700;
+  margin-right: 0.6em;
+  margin-bottom: 0.3em;
+}
+.md-typeset .grid.cards.guide-cards p:has(a.card-main) {
+  font-size: 0.75rem;
+  color: var(--md-default-fg-color--light);
+}
+.md-typeset .grid.cards.guide-cards p:has(a.card-main) a.card-main {
+  font-size: 0.8rem;
+}
+
 /* Lead paragraph under a page title */
 .md-typeset .lead {
   font-size: 1.05em;
