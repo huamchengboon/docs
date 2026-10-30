@@ -5,6 +5,12 @@ Install Symantec Endpoint Protection Manager (SEPM) on an isolated Windows Serve
 
 <span class="tag">Lab tested 30 Oct 2026</span> <span class="tag">SEPM 14.4</span> <span class="tag">Windows Server 2025</span> <span class="tag">Windows 11</span>
 
+**Looking for screenshots?** Start with the illustrated [manager setup](manager.md#install-and-run-the-configuration-wizard), [client deployment](client.md#export-a-package), or [offline definitions update](updates.md#2-import-on-the-offline-manager).
+
+![SEPM console showing the Windows 11 client online after its definitions update](img/client-updated.png)
+
+*Lab result: the client is online and its Virus Definitions column shows 10/29/2026 r21.*
+
 !!! note "Public examples"
 
     IP addresses and account details in the examples are placeholders. Screenshots show generic lab VM names; substitute your own values. Do not publish passwords, exported client packages, certificates or `sylink.xml` files: a managed package contains your site's communication settings.
@@ -35,10 +41,7 @@ WSUS handles Windows updates; SEPM manages the Symantec client and distributes S
 
 The test did **not** verify malware detection, a full scan, an actual WSUS update installation after adding SEP, disaster recovery, or the full range of offline security content. TCP reachability is not proof that a Windows update can be installed. Test those items separately in your environment.
 
-<figure markdown="span">
-  ![The SEPM Default Group showing the lab Windows 11 client online](img/client-updated.png){ loading=lazy }
-  <figcaption>After the offline import, the lab client is online and reports virus definitions dated 29 October 2026, revision 21.</figcaption>
-</figure>
+
 
 !!! warning "Antivirus definitions are one content type"
 
@@ -46,9 +49,13 @@ The test did **not** verify malware detection, a full scan, an actual WSUS updat
 
 ## Follow the guide
 
+
 1. [Install and configure the manager](manager.md).
+
 2. [Export and install a managed client](client.md).
+
 3. [Transfer certified definitions offline](updates.md).
+
 4. [Verify the result and troubleshoot](verification.md).
 
 For Windows updates, use the separate [Offline WSUS runbook](../offline-wsus/index.md). The SEPM procedure does not replace WSUS metadata export, import or approvals.
