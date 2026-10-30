@@ -13,7 +13,13 @@ Run these on the **Ignition Gateway**. Menu paths are from Ignition 8.1 ([Setup 
 
 1. Download the latest PostgreSQL JDBC driver (a file such as `postgresql-42.x.y.jar`) from [jdbc.postgresql.org](https://jdbc.postgresql.org/) to the Gateway machine.
 2. In the Gateway go to **Config**, **DATABASES**, **Drivers**, **PostgreSQL**, **Edit**.
-3. Click **Choose File**, select the downloaded `.jar`, and click **Save Changes** ([Fig. 5](TimescaleDB%20+%20Ignition%20Setup.pdf#page=7)).
+3. Click **Choose File**, select the downloaded `.jar`, and click **Save Changes**.
+
+    <figure markdown="span">
+      ![Ignition PostgreSQL driver page with the Browse button marked and the file postgresql-42.5.4.jar listed](img/jdbc-driver-jar.jpg){ loading=lazy }
+      <figcaption>Fig. 5. The JAR File(s) box. The lab used <code>postgresql-42.5.4.jar</code>; use the current 42.x release.</figcaption>
+    </figure>
+
 4. Check the file is now in `C:\Program Files\Inductive Automation\Ignition\user-lib\jdbc`.
 
 ## 2. Add the database connection
@@ -28,7 +34,12 @@ Go to **Config**, **DATABASES**, **Connections**, **Create new Database Connecti
 | Username | `ignition` |
 | Password | the password you set in [Database access](database-access.md) |
 
-Leave the other settings at their defaults and click **Create New Database Connection**. The connection status must read **Valid** ([Fig. 6](TimescaleDB%20+%20Ignition%20Setup.pdf#page=7)).
+Leave the other settings at their defaults and click **Create New Database Connection**. The connection status must read **Valid**.
+
+<figure markdown="span">
+  ![Ignition database connections list showing TIMESCALEDB with status Valid](img/db-connection-valid.jpg){ loading=lazy }
+  <figcaption>Fig. 6. The new connection, with status <strong>Valid</strong>.</figcaption>
+</figure>
 
 If it does not, the cause is almost always the network side: check the [firewall and `pg_hba.conf` steps](database-access.md#let-the-ignition-gateway-connect).
 
@@ -42,7 +53,17 @@ Go to **Config**, **TAGS**, **History** and open the historian for this connecti
 
 !!! danger "Turn off Data Partitioning and Data Pruning"
 
-    **Both must be disabled** ([Fig. 7 and Fig. 8](TimescaleDB%20+%20Ignition%20Setup.pdf#page=7)). Timescale's hypertable does both jobs. If Ignition's own partitioning stays on, it starts new tables (`sqlth_1_data`, then another when the partition length passes) instead of filling one, and the hypertable setup no longer matches the data. Click **Save Changes**.
+    **Both must be disabled.** Timescale's hypertable does both jobs. If Ignition's own partitioning stays on, it starts new tables (`sqlth_1_data`, then another when the partition length passes) instead of filling one, and the hypertable setup no longer matches the data. Click **Save Changes**.
+
+<figure markdown="span">
+  ![Historian provider settings with the Enable Partitioning checkbox unticked](img/history-partitioning-off.jpg){ loading=lazy }
+  <figcaption>Fig. 7. Data Partitioning: <strong>Enable Partitioning</strong> unticked (the default is on).</figcaption>
+</figure>
+
+<figure markdown="span">
+  ![Historian provider settings with the Enable Data Pruning checkbox unticked](img/history-pruning-off.jpg){ loading=lazy }
+  <figcaption>Fig. 8. Data Pruning: <strong>Enable Data Pruning</strong> unticked.</figcaption>
+</figure>
 
 ## 4. Let Ignition create the history table
 
@@ -79,12 +100,22 @@ Time Interval, Browse Path, Value Source, Data Type
 "0","Sine/Sine60","sine(0.0, 100.0, 60, true)","Float"
 ```
 
-Then open the device: **Config**, **OPC UA**, **Devices**, `TAGSIMULATOR`, **More**, **edit program**. Set **Load Program** to **Load from CSV**, click **Browse…**, choose the file, click **Open**, then **Load Simulator Program**. The list of simulated tags appears. Click **Save Program** and check the device status is **Running** ([Fig. 9](TimescaleDB%20+%20Ignition%20Setup.pdf#page=8)).
+Then open the device: **Config**, **OPC UA**, **Devices**, `TAGSIMULATOR`, **More**, **edit program**. Set **Load Program** to **Load from CSV**, click **Browse…**, choose the file, click **Open**, then **Load Simulator Program**. The list of simulated tags appears. Click **Save Program** and check the device status is **Running**.
+
+<figure markdown="span">
+  ![Ignition OPC UA devices list showing TAGSIMULATOR, a Programmable Device Simulator, enabled with status Running](img/simulator-running.jpg){ loading=lazy }
+  <figcaption>Fig. 9. The simulator device is running.</figcaption>
+</figure>
 
 ### b) A project with the tags
 
 1. In the **Designer**, create a new project (the PDF calls it `TIMESCALE`).
-2. In the **Tag Browser**, click **+**, then **Browse Devices…**. Expand **Ignition OPC UA Server** to the **Ramp** folder. Hold Shift to select all its tags and add them with the **→** key to the default provider. Do the same for **Sine**. Click **OK**. The Tag Browser must look like [Fig. 10](TimescaleDB%20+%20Ignition%20Setup.pdf#page=8).
+2. In the **Tag Browser**, click **+**, then **Browse Devices…**. Expand **Ignition OPC UA Server** to the **Ramp** folder. Hold Shift to select all its tags and add them with the **→** key to the default provider. Do the same for **Sine**. Click **OK**. The Tag Browser must look like this:
+
+<figure markdown="span">
+  ![Designer Tag Browser listing Ramp10 to Ramp60 and Sine10 to Sine60 with live values](img/tag-browser.jpg){ loading=lazy width="340" }
+  <figcaption>Fig. 10. The 12 simulator tags in the default provider.</figcaption>
+</figure>
 
 ### c) A tag group for Timescale
 
@@ -120,11 +151,21 @@ Double-click the `Sine10` tag. In the **Tag Editor**, open the **History** categ
 
     The [PDF](TimescaleDB%20+%20Ignition%20Setup.pdf#page=9) says to switch back "the `Ramp10` tag". It only enabled history on `Sine10`, so this is almost certainly a typo: turn off the tag you turned on.
 
-Then go to **Config**, **Tags**, **History**, `TIMESCALEDB` and **disable the provider** itself ([Fig. 11](TimescaleDB%20+%20Ignition%20Setup.pdf#page=9)), so nothing writes to the table while you convert it.
+Then go to **Config**, **Tags**, **History**, `TIMESCALEDB` and **disable the provider** itself, so nothing writes to the table while you convert it.
+
+<figure markdown="span">
+  ![Historical Tag Providers list showing TIMESCALEDB with Enabled false and status Disabled](img/history-provider-disabled.jpg){ loading=lazy }
+  <figcaption>Fig. 11. The provider is disabled: Enabled <code>false</code>, status <strong>Disabled</strong>.</figcaption>
+</figure>
 
 ## 5. Check the tables in pgAdmin
 
-On the database host open pgAdmin and go to **Servers**, your server, **Databases**, **tsdb**, **Schemas**, **public**, **Tables**. Ignition has created a set of tables ([Fig. 12](TimescaleDB%20+%20Ignition%20Setup.pdf#page=9)).
+On the database host open pgAdmin and go to **Servers**, your server, **Databases**, **tsdb**, **Schemas**, **public**, **Tables**. Ignition has created a set of tables.
+
+<figure markdown="span">
+  ![pgAdmin tables list: sqlth_1_data, sqlth_annotations, sqlth_drv, sqlth_partitions, sqlth_sce, sqlth_scinfo and sqlth_te](img/tables-created.jpg){ loading=lazy width="320" }
+  <figcaption>Fig. 12. The seven tables Ignition creates, in the <code>public</code> schema.</figcaption>
+</figure>
 
 The data table is named **`sqlth_1_data`**. The number is managed by the Gateway:
 
@@ -137,6 +178,11 @@ Right-click `sqlth_1_data`, choose **Query Tool**, and run:
 SELECT * FROM public.sqlth_1_data;
 ```
 
-The output must show a few recorded samples of the tag ([Fig. 13](TimescaleDB%20+%20Ignition%20Setup.pdf#page=9)).
+The output must show a few recorded samples of the tag.
+
+<figure markdown="span">
+  ![pgAdmin Data Output with four rows of sqlth_1_data: tagid 1, floatvalue, dataintegrity 192 and a millisecond t_stamp](img/query-sqlth-data.jpg){ loading=lazy }
+  <figcaption>Fig. 13. Four samples for tag 1. <code>dataintegrity</code> 192 means good quality, and <code>t_stamp</code> is milliseconds since 1970.</figcaption>
+</figure>
 
 Next: [turn the table into a hypertable](hypertable.md).

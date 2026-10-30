@@ -7,7 +7,12 @@ PostgreSQL, TimescaleDB and pgAdmin on Ubuntu 22.04 LTS, from the project's `apt
 
     Ubuntu 22.04.4 (jammy), PostgreSQL 14.10, TimescaleDB 2.13.1, pgAdmin 4 version 8.2, from the [Setup PDF](TimescaleDB%20+%20Ignition%20Setup.pdf#page=2). The host needs internet access. Replace `14` in the package names with the PostgreSQL version you install.
 
-Check the Ubuntu version first: **Settings**, then **About** ([Fig. 2](TimescaleDB%20+%20Ignition%20Setup.pdf#page=2)).
+Check the Ubuntu version first: **Settings**, then **About**. The lab host was Ubuntu 22.04.3 LTS, 64-bit.
+
+<figure markdown="span">
+  ![Ubuntu Settings, About page showing 5.8 GiB of memory, four CPUs, OS name Ubuntu 22.04.3 LTS and OS type 64-bit](img/ubuntu-about.jpg){ loading=lazy width="520" }
+  <figcaption>Fig. 2. Settings, About on the database host.</figcaption>
+</figure>
 
 ## 1. Install PostgreSQL
 
@@ -74,6 +79,18 @@ sudo apt install pgadmin4 -y
 
 The `i386` message from `apt update` is harmless.
 
-To use it: click **Show Applications**, then **pgAdmin4**. Right-click **Servers**, choose **Register**, then **Server…**, enter a name, open the **Connection** tab, fill in the connection details and click **Save** ([Fig. 3](TimescaleDB%20+%20Ignition%20Setup.pdf#page=6)). Expand the tree to the `tsdb` database once it exists ([Fig. 4](TimescaleDB%20+%20Ignition%20Setup.pdf#page=7)).
+To use it: click **Show Applications**, then **pgAdmin4**. Right-click **Servers**, choose **Register**, then **Server…**, enter a name, open the **Connection** tab, fill in the connection details and click **Save**.
+
+<figure markdown="span">
+  ![pgAdmin 4 Register Server dialog on the Connection tab, with host localhost, port 5432, user ignition and a masked password](img/pgadmin-register-server.jpg){ loading=lazy }
+  <figcaption>Fig. 3. Register Server, Connection tab. The boxes mark the tab, the host (<code>localhost</code> when pgAdmin runs on the database host), the user, the password, Save password and Save.</figcaption>
+</figure>
+
+Expand the tree to the `tsdb` database once it exists, and click it.
+
+<figure markdown="span">
+  ![pgAdmin 4 Object Explorer with the tsdb database selected under Servers, localhost and Databases](img/pgadmin-tsdb.jpg){ loading=lazy }
+  <figcaption>Fig. 4. The <code>tsdb</code> node in Object Explorer.</figcaption>
+</figure>
 
 PostgreSQL and pgAdmin are now installed. Next: [create the Ignition user and database, and allow the Gateway to connect](database-access.md).

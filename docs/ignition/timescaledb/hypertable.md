@@ -190,9 +190,26 @@ Leave `psql` with `\q`, then `exit` to return to your own account.
 
 On the **Ignition Gateway**:
 
-1. Go to **Config**, **Tags**, **History**, `TIMESCALEDB` and **re-enable** the provider ([Fig. 14](TimescaleDB%20+%20Ignition%20Setup.pdf#page=12)).
-2. In the Designer, open the project and enable history on all the remaining tags with **Storage Provider** `TIMESCALEDB` and **Historical Tag Group** `Timescale` ([Fig. 15](TimescaleDB%20+%20Ignition%20Setup.pdf#page=12)). For real tags, use the storage provider and tag group you actually want.
-3. Check that data arrives: a Vision startup page with an Easy Chart, or a similar trend, shows the history of all 12 test tags. The PDF used the *Ad Hoc Trends* component by Matthew Raybourn from the [Ignition Exchange](https://inductiveautomation.com/exchange/46/overview) ([Fig. 16](TimescaleDB%20+%20Ignition%20Setup.pdf#page=13)). Open the project in the Vision Client Launcher to see it.
+1. Go to **Config**, **Tags**, **History**, `TIMESCALEDB` and **re-enable** the provider.
+
+    <figure markdown="span">
+      ![Historical Tag Providers list showing TIMESCALEDB with Enabled true and status Running](img/history-provider-running.jpg){ loading=lazy }
+      <figcaption>Fig. 14. The provider is enabled again: Enabled <code>true</code>, status <strong>Running</strong>.</figcaption>
+    </figure>
+
+2. In the Designer, open the project and enable history on all the remaining tags with **Storage Provider** `TIMESCALEDB` and **Historical Tag Group** `Timescale`. For real tags, use the storage provider and tag group you actually want.
+
+    <figure markdown="span">
+      ![Designer Tag Editor on the History category with History Enabled true, storage provider TIMESCALEDB, deadband mode Percent 0.01, sample mode Tag Group and tag group Timescale](img/tag-history-settings.jpg){ loading=lazy }
+      <figcaption>Fig. 15. The History settings, with the clock icons in the Tag Browser showing which tags have history on.</figcaption>
+    </figure>
+
+3. Check that data arrives: a Vision startup page with an Easy Chart, or a similar trend, shows the history of all 12 test tags. The PDF used the *Ad Hoc Trends* component by Matthew Raybourn from the [Ignition Exchange](https://inductiveautomation.com/exchange/46/overview). Open the project in the Vision Client Launcher to see it.
+
+    <figure markdown="span">
+      ![Ad Hoc Trends chart in a Vision client plotting the 12 simulated tags from the TIMESCALEDB provider as overlapping sine and ramp waves](img/trend-chart.jpg){ loading=lazy }
+      <figcaption>Fig. 16. Near-real-time trending of all 12 simulated tags from TimescaleDB.</figcaption>
+    </figure>
 
 Next: [maintenance queries](maintenance.md), including the check of the first scheduled job run.
 

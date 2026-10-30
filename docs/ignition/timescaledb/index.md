@@ -68,6 +68,13 @@ The order matters. Ignition must create its history table before it can be conve
 
 ## Before you start
 
+The lab used two machines, one for the Ignition Gateway (with the simulator, the Tag Historian and a Vision client) and one for the database, joined by Ethernet.
+
+<figure markdown="span">
+  ![Lab architecture: an Ignition 8 Gateway host with the OPC UA simulator, Tag Historian, PostgreSQL driver and Vision, connected over Ethernet to a PostgreSQL Timescale host on Ubuntu 22.04 LTS](img/lab-architecture.jpg){ loading=lazy width="520" }
+  <figcaption>Fig. 1. The lab: data flows in from the tag historian over the PostgreSQL driver and out to the Vision client. Both hosts were virtual machines.</figcaption>
+</figure>
+
 - **Two machines** (virtual or physical): the database host and the Ignition Gateway. One machine also works for a test.
 - **Internet access** on the database host while installing.
 - **Knowledge:** Ignition 8, basic networking, and basic SQL. You do not need to know PostgreSQL.
@@ -80,7 +87,7 @@ The order matters. Ignition must create its history table before it can be conve
 
 ## Where the PDFs fit
 
-This site has the same material as the two PDFs in written form, with corrections and the order of steps made explicit. The PDFs add screenshots of every Ignition and pgAdmin screen. Each page below points to the matching figure.
+This site has the same material as the two PDFs in written form, with corrections and the order of steps made explicit. The 16 figures of the Setup PDF are placed beside the steps they belong to, cropped from the PDF and numbered as in it (Fig. 1 to 16). The PDFs remain available in full.
 
 - [TimescaleDB + Ignition Setup (PDF, 17 pages)](TimescaleDB%20+%20Ignition%20Setup.pdf)
 - [TimescaleDB Documentation (PDF, 4 pages)](TimescaleDB%20Documentation.pdf)
