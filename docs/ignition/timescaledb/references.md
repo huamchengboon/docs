@@ -9,6 +9,11 @@ Sources, credits and further reading.
 - [TimescaleDB Documentation (PDF)](TimescaleDB%20Documentation.pdf): the Windows install, the SQL Server comparison and the migration outline.
 - The original page of this guide, which covered the Windows install and the hypertable commands. It is now spread over [Install on Windows](install-windows.md) and [Hypertable setup](hypertable.md).
 
+## Compared against
+
+- [Integrate Ignition with Tiger Cloud](https://www.tigerdata.com/docs/integrate/data-ingestion-streaming/ignition) (Tiger Data documentation, undated, read 30 October 2026): the current Ignition setup with the columnstore names and millisecond policy ages.
+- [Ignition and TimescaleDB: a perfect pairing](https://www.tigerdata.com/blog/ignition-and-timescaledb-perfect-pairing) (Tiger Data blog, 17 April 2026, by Doug Pagnutti): the background and the same steps. It uses `INTERVAL` ages for the policies, which this guide does not follow (see [Hypertable setup](hypertable.md#4-add-the-compression-and-retention-policies)).
+
 ## Credits in the Setup PDF
 
 The Ubuntu part is partly based on Timescale's [Linux installation guide](https://docs.timescale.com/self-hosted/latest/install/installation-linux/), with additions for Ignition. The lab used a free ESXi 7.0U3g host from VMware, PostgreSQL 14.10, pgAdmin 4 version 8.2, and a time-limited licence of Ignition 8.1.37 LTS.

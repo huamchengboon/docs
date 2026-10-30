@@ -33,7 +33,11 @@ SELECT * FROM create_hypertable('sqlth_1_data','t_stamp', if_not_exists => True,
 
 - **`t_stamp`** is the time column. Ignition stores it as a number: milliseconds since 1970.
 - **`chunk_time_interval => 86400000`** is 24 hours in milliseconds, so Timescale starts a new chunk (a small internal table) every day.
-- **`migrate_data => True`** moves the existing rows into chunks. This can take a while on a table that already holds a lot of data.
+- **`migrate_data => True`** moves the existing rows into chunks. This can take a while on a table that already holds a lot of data, and [Tiger Data's blog](https://www.tigerdata.com/blog/ignition-and-timescaledb-perfect-pairing) warns that it locks the table while it runs. Convert before the table fills up.
+
+!!! tip "Choosing the chunk size"
+
+    Tiger Data recommends sizing chunks to hold about **1 to 20 million rows** each. Their examples: **1 day** (`86400000`) for 10,000 tag values per minute, and **1 hour** (`3600000`) for 300,000 tag values per minute. The goal is chunks small enough that a time-range query touches only a few. The lab's 12 tags once a second wrote about 1 million rows a day, so one day was a fair choice. Count your own rows per day before settling on `86400000`.
 
 Two warnings are harmless: `stringvalue` is `character varying` (Timescale prefers `TEXT`) and `datevalue` is `timestamp without time zone` (it prefers `TIMESTAMPTZ`). Ignition owns that table layout, so leave them. A `NOTICE` that data is migrating to chunks is normal. The result row `created = t` confirms the hypertable exists.
 
@@ -47,7 +51,7 @@ This groups compressed data by tag (`tagid`) and sorts it newest first, which su
 
 ## 3. Tell Timescale what "now" is
 
-Policies decide which chunks are old enough to act on, and they need the current time in the same units as the table's time column. A number-based time column has no built-in clock, so give it one: a small function that returns the current time in milliseconds.
+Policies decide which chunks are old enough to act on, and they need the current time in the same units as the table's time column. Tiger Data explains it the same way: `t_stamp` is a Unix time in milliseconds, not a PostgreSQL timestamp, so automated jobs "work out the age of each chunk relative to the current time" and must be told how to read "now". A number-based time column has no built-in clock, so give it one: a small function that returns the current time in milliseconds.
 
 ```sql title="psql"
 CREATE OR REPLACE FUNCTION unix_now() returns BIGINT LANGUAGE SQL STABLE as $$ SELECT (extract(epoch from now())*1000)::bigint $$;
@@ -73,9 +77,14 @@ Both ages are in **milliseconds**, because the time column is. Because chunks ar
 | 7 days | `604800000` |
 | 30 days | `2592000000` |
 | 31 days | `2678400000` |
-| 366 days (one year) | `31622400000` |
+| 365 days | `31536000000` |
+| 366 days (one year, as in the PDF) | `31622400000` |
 
-Choose one of the two sets below. Both come from the lab documents.
+Choose one of the two sets below. Both come from the lab documents. Tiger Data's guide uses 7 days (`604800000`) for compression and 365 days (`31536000000`) for retention, which sits between the two.
+
+!!! warning "Do not copy the `INTERVAL` examples from Tiger Data's blog"
+
+    The [blog post](https://www.tigerdata.com/blog/ignition-and-timescaledb-perfect-pairing) shows `add_compression_policy('sqlth_1_data', INTERVAL '7 days')` and `add_retention_policy('sqlth_1_data', INTERVAL '1 year')`. Tiger Data's [guide page](https://www.tigerdata.com/docs/integrate/data-ingestion-streaming/ignition) says that because `t_stamp` is an integer column, these arguments must be a number of **milliseconds** instead, and the blog does not set up the "now" function from step 3. This guide follows the guide page and the PDF: milliseconds, after `set_integer_now_func`.
 
 === "One year of history"
 
@@ -230,6 +239,20 @@ From version 2.18, Timescale renamed compression to *columnstore* ("hypercore").
 | `timescaledb.compress_segmentby` | `timescaledb.segmentby` |
 | `timescaledb.compress_orderby` | `timescaledb.orderby` |
 
+Tiger Data's current Ignition guide uses the newer names. For the same table, with a 7-day columnstore policy and a 365-day retention policy, it gives:
+
+```sql title="psql"
+ALTER TABLE sqlth_1_data SET (
+  timescaledb.enable_columnstore = true,
+  timescaledb.segmentby = 'tagid',
+  timescaledb.orderby = 't_stamp DESC'
+);
+SELECT add_columnstore_policy('sqlth_1_data', after => 604800000);
+SELECT add_retention_policy('sqlth_1_data', drop_after => 31536000000);
+```
+
+Their page has no date or version, so check that your TimescaleDB has these names before using them. The same page also applies to Tiger Cloud, Tiger Data's managed service, and says the steps are the same for a self-hosted TimescaleDB.
+
 Things to know if you are on a newer version:
 
 - From 2.20 the compression job is listed as **Columnstore Policy**, so the `proc_name` in the job queries above reads differently.
@@ -238,4 +261,4 @@ Things to know if you are on a newer version:
 
 Sources for this section: [timescaledb pull request 7443](https://github.com/timescale/timescaledb/pull/7443) (the renamed functions and settings), the two documentation pages above, and the [timescaledb-python update notes](https://github.com/jmitchel3/timescaledb-python/blob/main/docs/timescale-recent-updates.md).
 
-Tiger Data, the company behind TimescaleDB, also publishes its own [Ignition and TimescaleDB write-up](https://www.tigerdata.com/blog/ignition-and-timescaledb-perfect-pairing) with the same core steps: disable partitioning, convert `sqlth_1_data` with a millisecond chunk interval, then add compression and retention.
+Tiger Data, the company behind TimescaleDB, publishes an [integration guide](https://www.tigerdata.com/docs/integrate/data-ingestion-streaming/ignition) and a [blog post](https://www.tigerdata.com/blog/ignition-and-timescaledb-perfect-pairing) (17 April 2026) with the same core steps: disable partitioning, convert `sqlth_1_data` with a millisecond chunk interval, set the "now" function, then add compression and retention. Neither covers the BRIN index, reindex, autovacuum or the maintenance queries, which come from the PDF only.

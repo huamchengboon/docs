@@ -3,13 +3,24 @@
 Connect the Gateway to the new database, switch off Ignition's own partitioning and pruning, and let Ignition create its history table.
 { .lead }
 
-Run these on the **Ignition Gateway**. Menu paths are from Ignition 8.1 ([Setup PDF](TimescaleDB%20+%20Ignition%20Setup.pdf#page=7), pages 7 to 9). They have not been rechecked on 8.3.
+Run these on the **Ignition Gateway**. Menu paths and screenshots are from Ignition 8.1 ([Setup PDF](TimescaleDB%20+%20Ignition%20Setup.pdf#page=7), pages 7 to 9). Tiger Data's guide uses different menu names for the same steps; they are listed below.
+
+!!! note "Menu names in the Tiger Data guide"
+
+    [Tiger Data's Ignition guide](https://www.tigerdata.com/docs/integrate/data-ingestion-streaming/ignition) (undated, read on 30 October 2026) names the screens differently. We have not run these on a Gateway, so treat the mapping as a pointer:
+
+    | This page (Ignition 8.1, from the PDF) | Tiger Data's guide |
+    | --- | --- |
+    | **Config**, **DATABASES**, **Connections**, **Create new Database Connection** | **Connections**, **Database Connections**, **Create Database Connection +** |
+    | **Config**, **TAGS**, **History**, new **Database** historian provider | **Services**, **Historians**, **Create Historian +**, **SQL Historian** |
 
 ## 1. Update the JDBC driver
 
-!!! warning "Do not skip this"
+!!! warning "The two sources disagree on this"
 
-    By default Ignition ships a PostgreSQL JDBC driver of version 9.x, and the PDF states that it **does not support hypertable features**. Replace it with the current driver.
+    The Setup PDF (Ignition 8.1.37) says Ignition ships a PostgreSQL JDBC driver of version 9.x that **does not support hypertable features**, and replaces it. Tiger Data's guide says the PostgreSQL driver is "included in every standard Ignition install" and does not replace it. We could not test either way.
+
+    A hypertable lives in the database, so the driver version should not decide whether it works, but a very old driver can fail to connect, especially to a server using `scram-sha-256` passwords. A safe order: check the driver version listed in the Gateway; if it is older than 42.x, or the connection in step 2 fails, replace it as below.
 
 1. Download the latest PostgreSQL JDBC driver (a file such as `postgresql-42.x.y.jar`) from [jdbc.postgresql.org](https://jdbc.postgresql.org/) to the Gateway machine.
 2. In the Gateway go to **Config**, **DATABASES**, **Drivers**, **PostgreSQL**, **Edit**.
@@ -53,7 +64,9 @@ Go to **Config**, **TAGS**, **History** and open the historian for this connecti
 
 !!! danger "Turn off Data Partitioning and Data Pruning"
 
-    **Both must be disabled.** Timescale's hypertable does both jobs. If Ignition's own partitioning stays on, it starts new tables (`sqlth_1_data`, then another when the partition length passes) instead of filling one, and the hypertable setup no longer matches the data. Click **Save Changes**.
+    **Disable both.** Timescale's hypertable does both jobs. If Ignition's own partitioning stays on, it starts new tables (`sqlth_1_data`, then another when the partition length passes) instead of filling one, and the hypertable setup no longer matches the data. Tiger Data gives the same reason: partitioning left on makes Ignition "create multiple history tables" once the historian runs past the partition length. Click **Save Changes**.
+
+    Tiger Data's guide only mentions partitioning. The PDF also disables pruning, since pruning works by deleting old partitions and Timescale's retention policy replaces it. Disabling both is the safe choice.
 
 <figure markdown="span">
   ![Historian provider settings with the Enable Partitioning checkbox unticked](img/history-partitioning-off.jpg){ loading=lazy }
@@ -68,6 +81,8 @@ Go to **Config**, **TAGS**, **History** and open the historian for this connecti
 ## 4. Let Ignition create the history table
 
 Ignition only creates its history tables the first time a tag is historized. The hypertable conversion needs that table to exist, so you trigger it on purpose, with the smallest possible amount of data.
+
+Tiger Data's guide gets the table the same way ("creating any tag and setting `History Enabled` to `True`") and does not turn history off again. It converts while data keeps flowing, and its [blog post](https://www.tigerdata.com/blog/ignition-and-timescaledb-perfect-pairing) warns that converting a large existing table "takes time and locks the table while it runs". Switching history off first, as the PDF does, keeps the table nearly empty so the conversion is instant. Both work; the PDF's way is safer, and is easiest to do **before** real data arrives.
 
 This section uses a simulator so the steps work on an empty Gateway. **If you already have real tags**, skip the simulator and the project: turn history on for one real tag to the new provider, then follow the same turn-it-off steps below.
 
@@ -145,9 +160,9 @@ Double-click the `Sine10` tag. In the **Tag Editor**, open the **History** categ
 | Sample Mode | `Tag Group` |
 | Historical Tag Group | `Timescale` |
 
-!!! danger "This part is time-critical"
+!!! danger "Keep this quick"
 
-    Click **Apply**, and within **2 to 5 seconds** set **History Enabled** back to `false` and click **Apply** again. You only want Ignition to create the tables and write a few samples. At the end there must be **no tag** with history enabled for the `TIMESCALEDB` provider.
+    Click **Apply**, and within **2 to 5 seconds** (the PDF's figure) set **History Enabled** back to `false` and click **Apply** again. You only want Ignition to create the tables and write a few samples. At the end there must be **no tag** with history enabled for the `TIMESCALEDB` provider.
 
     The [PDF](TimescaleDB%20+%20Ignition%20Setup.pdf#page=9) says to switch back "the `Ramp10` tag". It only enabled history on `Sine10`, so this is almost certainly a typo: turn off the tag you turned on.
 
@@ -171,6 +186,8 @@ The data table is named **`sqlth_1_data`**. The number is managed by the Gateway
 
 - A setup from scratch on the same Gateway creates `sqlth_2_data`, then `sqlth_3_data`, and so on.
 - If you see a table name in any other format, the history provider is misconfigured. The usual cause is **Data Partitioning left enabled**, from step 3.
+
+You can run the SQL in this guide in pgAdmin's **Query Tool**, with `psql`, or, as Tiger Data suggests, in Ignition's own [Simple Database Editor](https://www.docs.inductiveautomation.com/docs/7.9/sql-in-ignition/common-sql-tasks/simple-database-editor).
 
 Right-click `sqlth_1_data`, choose **Query Tool**, and run:
 

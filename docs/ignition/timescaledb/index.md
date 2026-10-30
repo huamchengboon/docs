@@ -9,6 +9,8 @@ Use PostgreSQL with the TimescaleDB extension as the database behind Ignition's 
 
     The steps come from two documents kept on this site: the [Setup PDF](TimescaleDB%20+%20Ignition%20Setup.pdf) (Ubuntu 22.04, PostgreSQL 14.10, TimescaleDB 2.13.1, Ignition 8.1.37 LTS, pgAdmin 4 8.2, February 2024) and the [Documentation PDF](TimescaleDB%20Documentation.pdf) (Windows, PostgreSQL 16, TimescaleDB 2.13.1). It has not been re-run on newer versions. Check [Newer TimescaleDB versions](hypertable.md#newer-timescaledb-versions) before using a version after 2.13.
 
+    It was also compared, on 30 October 2026, with Tiger Data's own [Ignition integration guide](https://www.tigerdata.com/docs/integrate/data-ingestion-streaming/ignition) and [blog post](https://www.tigerdata.com/blog/ignition-and-timescaledb-perfect-pairing). Where they differ from the PDFs, the page says so. Nothing here was tested on a live system.
+
 ## Why PostgreSQL with TimescaleDB
 
 The usual alternative is Microsoft SQL Server, and it has two problems for a historian:
