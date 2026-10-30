@@ -9,6 +9,14 @@ Build guides, runbooks and troubleshooting notes, each written from a working la
 
 <div class="grid cards" markdown>
 
+-   :material-shield-check:{ .lg .middle } **Offline Symantec Endpoint Protection**
+
+    ---
+
+    Install SEPM, enroll a Windows client, and transfer antivirus definitions into an isolated network.
+
+    [:octicons-arrow-right-24: Open the guide](windows-server/offline-sepm/index.md)
+
 -   :material-microsoft-windows:{ .lg .middle } **Offline WSUS runbook**
 
     ---
@@ -40,4 +48,4 @@ Build guides, runbooks and troubleshooting notes, each written from a working la
 | Topic | Guides |
 | --- | --- |
 | Ignition | [Windows SSO for Perspective](ignition/windows-sso/index.md), [TimescaleDB with Ignition](ignition/timescaledb/index.md) |
-| Windows Server | [Offline WSUS runbook](windows-server/offline-wsus/index.md) |
+| Windows Server | [Offline WSUS runbook](windows-server/offline-wsus/index.md), [Offline Symantec Endpoint Protection](windows-server/offline-sepm/index.md) |

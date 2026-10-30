@@ -37,6 +37,7 @@ Current guides:
 | Topic | Guide | Folder |
 | --- | --- | --- |
 | Windows Server | Offline WSUS runbook | `docs/windows-server/offline-wsus/` |
+| Windows Server | Offline Symantec Endpoint Protection | `docs/windows-server/offline-sepm/` |
 | Ignition | Windows SSO for Ignition Perspective | `docs/ignition/windows-sso/` |
 | Ignition | TimescaleDB with Ignition | `docs/ignition/timescaledb/` |
 

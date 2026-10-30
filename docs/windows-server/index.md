@@ -10,6 +10,19 @@ Guides for Windows Server roles and operations, each written from a working lab:
 
 <div class="grid cards guide-cards" markdown>
 
+-   :material-shield-check:{ .lg .middle } **Offline Symantec Endpoint Protection**
+
+    ---
+
+    Install the manager beside an offline WSUS lab, enroll a Windows client, and carry antivirus definitions across the network boundary.
+
+    <span class="tag">SEPM 14.4</span> <span class="tag">Windows Server 2025</span> <span class="tag">Air-gapped</span>
+
+    [:octicons-arrow-right-24: Open the guide](offline-sepm/index.md){ .card-main }
+    [Deploy a client](offline-sepm/client.md) ·
+    [Offline definitions](offline-sepm/updates.md) ·
+    [Verify](offline-sepm/verification.md)
+
 -   :material-microsoft-windows:{ .lg .middle } **Offline WSUS runbook**
 
     ---
@@ -39,4 +52,5 @@ Guides for Windows Server roles and operations, each written from a working lab:
 
 | Guide | What you end up with | Size | Status |
 | --- | --- | --- | --- |
+| [Offline Symantec Endpoint Protection](offline-sepm/index.md) | A manager and one managed Windows 11 client, with antivirus definitions transferred offline | 5 pages | <span class="pill ok">Lab tested 30 Oct 2026</span> |
 | [Offline WSUS runbook](offline-wsus/index.md) | An offline WSUS that patches Windows 11 clients and itself, refreshed from an online WSUS each month | 13 pages, 28 annotated screenshots, 10 scripts | <span class="pill ok">Validated 27 to 29 Oct 2026</span> |

@@ -161,6 +161,12 @@ nav:
   - Home: index.md
   - Windows Server:
       - windows-server/index.md
+      - Offline Symantec Endpoint Protection:
+          - Overview and lab results: windows-server/offline-sepm/index.md
+          - Install and configure the manager: windows-server/offline-sepm/manager.md
+          - Deploy a managed client: windows-server/offline-sepm/client.md
+          - Update definitions offline: windows-server/offline-sepm/updates.md
+          - Verify and troubleshoot: windows-server/offline-sepm/verification.md
       - Offline WSUS runbook:
           - Overview: windows-server/offline-wsus/index.md
           - What the lab proved: windows-server/offline-wsus/lab-results.md
