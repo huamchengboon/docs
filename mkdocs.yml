@@ -1,0 +1,138 @@
+# Theme setup adapted from the uv documentation (https://github.com/astral-sh/uv, Apache-2.0).
+site_name: Huam Cheng Boon Docs
+site_description: Build guides, runbooks and troubleshooting notes from working labs.
+site_url: https://huamchengboon.github.io/docs/
+repo_url: https://github.com/huamchengboon/docs
+repo_name: huamchengboon/docs
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  custom_dir: docs/.overrides
+  icon:
+    logo: material/book-open-page-variant
+    repo: fontawesome/brands/github
+  favicon: assets/favicon.svg
+  features:
+    - navigation.path
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+    - navigation.sections
+    - navigation.indexes
+    - navigation.tracking
+    - navigation.footer
+    - navigation.top
+    - content.code.annotate
+    - content.code.copy
+    - content.tabs.link
+    - toc.follow
+    - search.highlight
+    - search.suggest
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: astral-light
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: astral-dark
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.snippets
+  - pymdownx.magiclink
+  - attr_list
+  - def_list
+  - md_in_html
+  - tables
+  - toc:
+      anchorlink: true
+      anchorlink_class: "toclink"
+  - pymdownx.inlinehilite
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.keys
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+plugins:
+  - search
+
+extra_css:
+  - stylesheets/extra.css
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/huamchengboon
+
+nav:
+  - Home: index.md
+  - Windows Server:
+      - windows-server/index.md
+      - Offline WSUS runbook:
+          - Overview: windows-server/offline-wsus/index.md
+          - What the lab proved: windows-server/offline-wsus/lab-results.md
+          - Before you start: windows-server/offline-wsus/prerequisites.md
+          - One-time build: windows-server/offline-wsus/build.md
+          - Monthly routine: windows-server/offline-wsus/monthly-routine.md
+          - Installing on the client: windows-server/offline-wsus/client-install.md
+          - Cleanup and retention: windows-server/offline-wsus/cleanup.md
+          - Patching the WSUS server: windows-server/offline-wsus/server-patching.md
+          - Fixing problems: windows-server/offline-wsus/troubleshooting.md
+          - Rollback and safety: windows-server/offline-wsus/safety.md
+          - Known gaps: windows-server/offline-wsus/known-gaps.md
+          - Script library: windows-server/offline-wsus/scripts.md
+          - Reference values: windows-server/offline-wsus/reference.md
+  - Ignition:
+      - ignition/index.md
+      - Windows SSO for Perspective:
+          - Overview: ignition/windows-sso/index.md
+          - Values used in this build: ignition/windows-sso/values.md
+          - How a login works: ignition/windows-sso/login-flow.md
+          - Prerequisites and decisions: ignition/windows-sso/prerequisites.md
+          - Build:
+              - ignition/windows-sso/build/step-01.md
+              - ignition/windows-sso/build/step-02.md
+              - ignition/windows-sso/build/step-03.md
+              - ignition/windows-sso/build/step-04.md
+              - ignition/windows-sso/build/step-05.md
+              - ignition/windows-sso/build/step-06.md
+              - ignition/windows-sso/build/step-07.md
+              - ignition/windows-sso/build/step-08.md
+              - ignition/windows-sso/build/step-09.md
+              - ignition/windows-sso/build/step-10.md
+              - ignition/windows-sso/build/step-11.md
+          - Verification checklist: ignition/windows-sso/verification.md
+          - Troubleshooting: ignition/windows-sso/troubleshooting.md
+          - Production and security notes: ignition/windows-sso/production.md
+          - Appendix:
+              - Rebuild script: ignition/windows-sso/appendix/rebuild-script.md
+              - The page, as a script: ignition/windows-sso/appendix/view-script.md
+              - Files and paths: ignition/windows-sso/appendix/files.md
+              - References: ignition/windows-sso/appendix/references.md
+      - TimescaleDB with Ignition: ignition/timescaledb/index.md
+
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn

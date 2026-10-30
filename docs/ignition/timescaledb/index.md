@@ -107,3 +107,8 @@ SELECT add_retention_policy('sqlth_1_data', drop_after => 2592000000); # 30 days
 
 ~~SELECT drop_chunks(CAST ('2592000000' AS BIGINT),'sqlth_1_data'); #30 days~~
 
+
+## Downloads
+
+- [TimescaleDB + Ignition Setup (PDF)](TimescaleDB%20+%20Ignition%20Setup.pdf)
+- [TimescaleDB Documentation (PDF)](TimescaleDB%20Documentation.pdf)
