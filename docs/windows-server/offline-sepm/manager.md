@@ -16,7 +16,19 @@ This procedure describes the choices made in the lab. Check [Broadcom's release 
 ## Install and run the configuration wizard
 
 1. Extract the authorized manager package and run its `Setup.exe` as an administrator. Choose the intended installation location. In this lab, the application was installed to a custom directory on the data volume.
+
+    <figure markdown="span">
+      ![Older SEPM installer showing the destination folder selection](https://higherlogicdownload.s3.amazonaws.com/BROADCOM/SymantecInlineImages/article-3671461-files_Screenshot_4.png){ loading=lazy }
+      <figcaption>Example destination-folder screen from an older SEPM 14 MP1 installation. Your screen and default path may differ. Source: <a href="https://community.broadcom.com/symantecenterprise/viewdocument/how-to-install-sepm-14-mp1-with-emb?CommunityKey=1ecf5f55-9545-44d6-b0f4-4e4a7f5f5e68&amp;tab=librarydocuments">Broadcom community walkthrough by IN007</a>.</figcaption>
+    </figure>
 2. When the **Management Server Configuration Wizard** opens, select **Default configuration for new installation (fewer than 500 clients)**. The lab wizard installed a separate SQL Server Express instance automatically.
+
+    <figure markdown="span">
+      ![Older SEPM wizard showing configuration type choices](https://higherlogicdownload.s3.amazonaws.com/BROADCOM/SymantecInlineImages/article-3671461-files_Screenshot_9.png){ loading=lazy }
+      <figcaption>Example configuration-type screen from SEPM 14 MP1. Source: <a href="https://community.broadcom.com/symantecenterprise/viewdocument/how-to-install-sepm-14-mp1-with-emb?CommunityKey=1ecf5f55-9545-44d6-b0f4-4e4a7f5f5e68&amp;tab=librarydocuments">Broadcom community walkthrough by IN007</a>.</figcaption>
+    </figure>
+
+    The source example uses the older embedded database; the 14.4 lab used SQL Server Express. Follow the instructions for your own version rather than the older database choices.
 3. Create the manager administrator account. Supply a strong password and store it in your approved password manager. The wizard notes that this initial password is also used for the database; changing the administrator password later does not automatically change the database password.
 4. Enter an email address. The lab used a non-deliverable placeholder and left the mail server unconfigured; password reset emails and notifications therefore cannot be delivered. Configure a reachable internal mail service if those capabilities are required.
 5. Set and securely record the **default client password**. It controls protected actions such as uninstalling or stopping the client. Do not place it in an exported guide.
@@ -29,7 +41,7 @@ This procedure describes the choices made in the lab. Check [Broadcom's release 
       <figcaption>The configured manager console in the lab. The client shown here was added and updated in the later steps.</figcaption>
     </figure>
 
-    The original installation wizard was not captured during setup; the numbered choices above record what was selected in the lab.
+    The original lab installation wizard was not captured; the external examples above are from an older release and show similar screens. They load from the source site and require internet access.
 
 !!! tip "Check before proceeding"
 
