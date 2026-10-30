@@ -3,7 +3,7 @@
 # documentation (https://github.com/fastapi/fastapi, MIT).
 site_name: Huam Cheng Boon Docs
 site_description: Build guides, runbooks and troubleshooting notes from working labs.
-site_url: https://huamchengboon.github.io/docs/
+site_url: https://docs.chengboon.com/
 repo_url: https://github.com/huamchengboon/docs
 repo_name: huamchengboon/docs
 edit_uri: edit/main/docs/
