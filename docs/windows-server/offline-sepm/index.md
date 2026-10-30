@@ -7,7 +7,7 @@ Install Symantec Endpoint Protection Manager (SEPM) on an isolated Windows Serve
 
 !!! note "Public examples"
 
-    Names, IP addresses, account details and paths in the examples are placeholders. Substitute your own values. Do not publish passwords, exported client packages, certificates or `sylink.xml` files: a managed package contains your site's communication settings.
+    IP addresses and account details in the examples are placeholders. Screenshots show generic lab VM names; substitute your own values. Do not publish passwords, exported client packages, certificates or `sylink.xml` files: a managed package contains your site's communication settings.
 
 ## How the lab is arranged
 
@@ -34,6 +34,11 @@ WSUS handles Windows updates; SEPM manages the Symantec client and distributes S
 | License | The console showed a trial license. A valid production entitlement and activation process must be arranged separately. |
 
 The test did **not** verify malware detection, a full scan, an actual WSUS update installation after adding SEP, disaster recovery, or the full range of offline security content. TCP reachability is not proof that a Windows update can be installed. Test those items separately in your environment.
+
+<figure markdown="span">
+  ![The SEPM Default Group showing the lab Windows 11 client online](img/client-updated.png){ loading=lazy }
+  <figcaption>After the offline import, the lab client is online and reports virus definitions dated 29 October 2026, revision 21.</figcaption>
+</figure>
 
 !!! warning "Antivirus definitions are one content type"
 

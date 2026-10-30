@@ -2,6 +2,11 @@
 
 Use the console and client evidence together. A reachable port or a successful installer does not by itself show that registration, policies and definitions work.
 
+<figure markdown="span">
+  ![SEPM client group showing the Windows 11 client online and its protection status](img/client-updated.png){ loading=lazy }
+  <figcaption>After the import, the client is Online and Virus Definitions shows 10/29/2026 r21. Antivirus and firewall are enabled.</figcaption>
+</figure>
+
 ## Acceptance checklist
 
 | Check | How to verify | Lab result |

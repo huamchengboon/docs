@@ -28,6 +28,11 @@ Find the actual SEPM installation directory. The default 64-bit installation loc
     ```
 
     Broadcom recommends **copying** the file into this directory so that permissions are inherited correctly. Allow the manager to process it before adding another file.
+
+    <figure markdown="span">
+      ![File Explorer showing the lab manager incoming folder after processing](img/definitions-inbox.png){ loading=lazy }
+      <figcaption>The lab used D:\Symantec\SEPM\data\inbox\content\incoming. The folder is empty after processing; check the client too.</figcaption>
+    </figure>
 3. Watch the inbox. The file should disappear when SEPM processes it; disappearance alone is not proof that every client updated. Investigate `.err` files or content processing errors if present.
 4. In the console, check **Admin → Servers → Local Site → Show LiveUpdate Downloads**. You can also inspect `Inetpub\content\ContentInfo.txt` under the installation directory to identify the content folder for your client version. In the lab, the relevant 64-bit Core 3 folder gained revision `261029021`.
 
@@ -36,6 +41,11 @@ Find the actual SEPM installation directory. The default 64-bit installation loc
 1. In **Clients**, open the client's group and refresh the view. Check the client is online and note its **Virus Definitions** date and policy serial number.
 2. Allow the normal heartbeat to occur. If you need to prompt one, run `smc -updateconfig` on the client; Broadcom says this triggers the same heartbeat as **Update Policy** in the client tray menu. See [Broadcom's heartbeat note](https://knowledge.broadcom.com/external/article/156656/what-is-the-difference-between-the-comma.html).
 3. Verify the client actually has the expected revision. The lab client received `20261029.021` after its forced heartbeat. Record the actual date and revision from your own run rather than assuming a successful file copy updated the endpoint.
+
+    <figure markdown="span">
+      ![Client online with virus definitions dated October 29 2026 revision 21](img/client-updated.png){ loading=lazy }
+      <figcaption>After the update, the Virus Definitions column shows 10/29/2026 r21 for the online Windows 11 client.</figcaption>
+    </figure>
 
 ## Limits of the JDB method
 

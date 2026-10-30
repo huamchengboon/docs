@@ -24,6 +24,13 @@ This procedure describes the choices made in the lab. Check [Broadcom's release 
 7. Continue and let the wizard install SQL Server Express and initialize the database. Select **Finish** once it reports **Configuration completed**.
 8. Open the management console and sign in as the manager administrator. In this lab the web console opened on HTTPS port **8446**. Record your own address and certificate details privately.
 
+    <figure markdown="span">
+      ![SEPM web console displaying Clients and Default Group](img/client-updated.png){ loading=lazy }
+      <figcaption>The configured manager console in the lab. The client shown here was added and updated in the later steps.</figcaption>
+    </figure>
+
+    The original installation wizard was not captured during setup; the numbered choices above record what was selected in the lab.
+
 !!! tip "Check before proceeding"
 
     Confirm that the manager and its SQL Express service are running, the console opens, and WSUS still starts. The manager installation alone does not install the SEP protection client on the server.
