@@ -81,14 +81,18 @@ The same checks from the command line:
 
 ```powershell title="powershell on the client"
 $cv = Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion'
-"Build: $($cv.CurrentBuildNumber).$($cv.UBR)"        # July 2026 CU = 26200.8875
+"Build: $($cv.CurrentBuildNumber).$($cv.UBR)"
+
 (New-Object -ComObject Microsoft.Update.Session).CreateUpdateSearcher().QueryHistory(0,5) |
-  ForEach-Object { "{0:g} code={1} hr=0x{2:X8} {3}" -f $_.Date, $_.ResultCode, $_.HResult, $_.Title }
+  ForEach-Object {
+    "{0:g} code={1} hr=0x{2:X8} {3}" -f $_.Date, $_.ResultCode, $_.HResult, $_.Title
+  }
+
 $r = (New-Object -ComObject Microsoft.Update.Session).CreateUpdateSearcher().Search("IsInstalled=0 and IsHidden=0")
 "Still offered: " + $r.Updates.Count
 ```
 
-Success is the expected build, a history entry with `code=2` and `hr=0x00000000`, and nothing left offered.
+Success is the expected build (July 2026 is 26200.8875), a history entry with `code=2` and `hr=0x00000000`, and nothing left offered.
 
 !!! note "If it is not offered yet"
 

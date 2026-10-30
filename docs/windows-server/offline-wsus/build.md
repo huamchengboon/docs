@@ -35,11 +35,13 @@ This section builds everything once. Each step uses the mouse wherever Windows h
 ```powershell title="powershell on the Hyper-V host"
 New-VMSwitch -Name OfflineNet -SwitchType Internal
 New-NetIPAddress -InterfaceAlias "vEthernet (OfflineNet)" -IPAddress 10.0.0.1 -PrefixLength 24
-# No New-NetNat on purpose.
+```
 
-# Prove the isolation from the offline server (all should fail):
-# Test-NetConnection 192.0.2.2 -Port 22      (the online server)
-# Get-NetRoute -DestinationPrefix 0.0.0.0/0      (should return nothing)
+There is no `New-NetNat` on purpose. Then prove the isolation from the offline server. The first command tries the online server and must fail. The second must return nothing, because there is no default route.
+
+```powershell title="powershell on the offline server"
+Test-NetConnection 192.0.2.2 -Port 22
+Get-NetRoute -DestinationPrefix 0.0.0.0/0
 ```
 
 !!! warning "Check"

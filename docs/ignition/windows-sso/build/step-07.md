@@ -15,12 +15,13 @@ Install, commission, enable HTTPS with the certificate from Step 2.4, and make I
 
 ## 7.2 Commission the Gateway
 
-Open `http://localhost:8088/` on the server. Until commissioning finishes, `/StatusPing` returns `{"state":"RUNNING","details":"COMMISSIONING"}` and HTTPS (8043) is **not** listening. In the wizard accept the licence and **create the Gateway admin user** (choose a strong password yourself — it is the Designer/config login, *not* the SSO user). Answer the Quick Start prompt with “No thanks” for a clean system. The Gateway then starts (`StatusPing` → `RUNNING`).
+Open `http://localhost:8088/` on the server. Until commissioning finishes, `/StatusPing` returns `{"state":"RUNNING","details":"COMMISSIONING"}` and HTTPS (8043) is **not** listening. In the wizard accept the licence and **create the Gateway admin user** (choose a strong password yourself — it is the Designer/config login, *not* the SSO user). Answer the Quick Start prompt with “No thanks” for a clean system. The Gateway then starts (`StatusPing` → `RUNNING`). Port 8043 only appears in the last list after SSL is set up in 7.3.
 
 ```powershell title="PS>"
 Get-Service Ignition
 (Invoke-WebRequest http://localhost:8088/StatusPing -UseBasicParsing).Content
-Get-NetTCPConnection -State Listen | Where LocalPort -in 8088,8060,8043     # 8043 only after SSL is set up
+
+Get-NetTCPConnection -State Listen | Where LocalPort -in 8088,8060,8043
 ```
 
 ## 7.3 Turn on HTTPS with your certificate
@@ -43,10 +44,15 @@ Log in at `http://localhost:8088/app/…` → **Network → Web Server** (left m
 The Gateway is a TLS *client* when it fetches AD FS’s discovery document and calls the token endpoint. Java does not use the Windows trust store, so import the CA into the JRE that ships with Ignition and restart:
 
 ```powershell title="PS>"
-$kt = 'C:\Program Files\Inductive Automation\Ignition\lib\runtime\jre-win\bin\keytool.exe'
+$kt      = 'C:\Program Files\Inductive Automation\Ignition\lib\runtime\jre-win\bin\keytool.exe'
 $cacerts = 'C:\Program Files\Inductive Automation\Ignition\lib\runtime\jre-win\lib\security\cacerts'
+
 Copy-Item $cacerts C:\adfs-setup\cacerts.bak -Force
-& $kt -importcert -noprompt -trustcacerts -alias example-ca -file C:\adfs-setup\example-ca.cer -keystore $cacerts -storepass changeit
+
+& $kt -importcert -noprompt -trustcacerts -alias example-ca `
+  -file C:\adfs-setup\example-ca.cer `
+  -keystore $cacerts -storepass changeit
+
 Restart-Service Ignition
 ```
 
@@ -61,9 +67,14 @@ $tcp = New-Object Net.Sockets.TcpClient('ignition.example.local',8043)
 $ssl = New-Object Net.Security.SslStream($tcp.GetStream(),$false)
 $ssl.AuthenticateAsClient('ignition.example.local')
 "TLS: $($ssl.SslProtocol)"
+
 $c = New-Object Security.Cryptography.X509Certificates.X509Certificate2($ssl.RemoteCertificate)
-$c.Subject; $c.Issuer; $c.NotAfter
-$chain = New-Object Security.Cryptography.X509Certificates.X509Chain; $chain.ChainPolicy.RevocationMode='NoCheck'
+$c.Subject
+$c.Issuer
+$c.NotAfter
+
+$chain = New-Object Security.Cryptography.X509Certificates.X509Chain
+$chain.ChainPolicy.RevocationMode='NoCheck'
 "Chain valid: $($chain.Build($c))"
 ```
 

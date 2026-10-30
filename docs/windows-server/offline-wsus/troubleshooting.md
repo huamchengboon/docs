@@ -33,8 +33,11 @@ Each entry lists what you see, what we think is behind it, and the fixes in the 
     3. Stop WSUS and BITS together, then start BITS and WSUS again. The BITS queue is stored in `C:\ProgramData\Microsoft\Network\Downloader`. Guides suggest renaming the queue files while BITS is stopped. We tried that, but on Server 2025 the files are `qmgr.db` and `qmgr.jfm`, and our command looked for `qmgr*.dat`, so nothing was renamed. The jobs began to move after that restart anyway. Renaming the queue files is untested here.
 
         ```powershell title="powershell on the online server"
-        Stop-Service WsusService -Force; Stop-Service BITS -Force
-        Start-Service BITS; Start-Service WsusService
+        Stop-Service WsusService -Force
+        Stop-Service BITS -Force
+
+        Start-Service BITS
+        Start-Service WsusService
         ```
 
     4. Run `wsusutil reset`. It re-checks every file and cleans the queue. It was needed once, and in one case it did not help.
@@ -121,17 +124,32 @@ Each entry lists what you see, what we think is behind it, and the fixes in the 
 
     **Fix.** In the console click **Options**, then **Products and Classifications**, untick the product, click **OK**, sync, then tick it again and sync a second time. The updates return, with the old months. Run script 8 afterwards.
 
-    <span class="tag cli">CLI</span> The same from PowerShell on the online server. Replace the product title with yours. This lab had two products ticked.
+    <span class="tag cli">CLI</span> The same from PowerShell on the online server. Replace the product title with yours. This lab had two products ticked. The last two lines turn the product off and sync, then turn it on again and sync.
 
     ```powershell title="powershell on the online server"
-    $w = Get-WsusServer; $s = $w.GetSubscription()
+    $w = Get-WsusServer
+    $s = $w.GetSubscription()
+
     function SetProducts($titles) {
       $c = New-Object Microsoft.UpdateServices.Administration.UpdateCategoryCollection
-      foreach ($t in $titles) { [void]$c.Add(($w.GetUpdateCategories() | Where-Object Title -eq $t)) }
-      $s.SetUpdateCategories($c); $s.Save()
+      foreach ($t in $titles) {
+        [void]$c.Add(($w.GetUpdateCategories() | Where-Object Title -eq $t))
+      }
+      $s.SetUpdateCategories($c)
+      $s.Save()
     }
-    function SyncAndWait { $s.StartSynchronization(); Start-Sleep 20
-      while ($s.GetSynchronizationStatus() -ne 'NotProcessing') { Start-Sleep 30 } }
-    SetProducts @('Windows 11'); SyncAndWait                                         # product off
-    SetProducts @('Windows 11','Microsoft Server Operating System-24H2'); SyncAndWait   # product on again
+
+    function SyncAndWait {
+      $s.StartSynchronization()
+      Start-Sleep 20
+      while ($s.GetSynchronizationStatus() -ne 'NotProcessing') {
+        Start-Sleep 30
+      }
+    }
+
+    SetProducts @('Windows 11')
+    SyncAndWait
+
+    SetProducts @('Windows 11','Microsoft Server Operating System-24H2')
+    SyncAndWait
     ```

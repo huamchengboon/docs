@@ -41,11 +41,14 @@ A WSUS server is not a client of its own WSUS unless you set it. We pointed ours
 
 ```powershell title="powershell on the offline WSUS server, as administrator"
 $k = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate'
-New-Item $k -Force | Out-Null; New-Item "$k\AU" -Force | Out-Null
+New-Item $k -Force | Out-Null
+New-Item "$k\AU" -Force | Out-Null
+
 Set-ItemProperty $k WUServer       'http://10.0.0.10:8530'
 Set-ItemProperty $k WUStatusServer 'http://10.0.0.10:8530'
 Set-ItemProperty "$k\AU" UseWUServer  1 -Type DWord
 Set-ItemProperty "$k\AU" NoAutoUpdate 1 -Type DWord
+
 Restart-Service wuauserv
 ```
 
@@ -65,15 +68,18 @@ Take a checkpoint of the server first. Then install exactly as on a client. Sign
 
 ## 13.5 Check that the server and WSUS still work
 
-Do not stop at the build number. Check all of these, on the server and from a client.
+Do not stop at the build number. Check all of these, on the server and from a client. The build for Server 2025 August 2026 is 26100.33296, the three services should be Running, and the last line should print 200.
 
 ```powershell title="powershell on the offline WSUS server"
 $cv = Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion'
-"Build: $($cv.CurrentBuildNumber).$($cv.UBR)"                       # Server 2025 August 2026 = 26100.33296
+"Build: $($cv.CurrentBuildNumber).$($cv.UBR)"
+
 Get-Service WsusService, W3SVC, 'MSSQL$MICROSOFT##WID' | Format-Table Name, Status
+
 $w = Get-WsusServer
 "WSUS API ok, updates: " + @($w.GetUpdates((New-Object Microsoft.UpdateServices.Administration.UpdateScope))).Count
-(Invoke-WebRequest http://localhost:8530/ClientWebService/client.asmx -UseBasicParsing).StatusCode   # expect 200
+
+(Invoke-WebRequest http://localhost:8530/ClientWebService/client.asmx -UseBasicParsing).StatusCode
 ```
 
 Then run the scan from [Installing on the client](client-install.md) on a client. In the lab, the server reported build 26100.33296, the update history showed `code=2`, the WSUS service, IIS and the database were running, the API returned the same 181 updates and 6 approved, the web service answered HTTP 200, and the Windows 11 client scanned the patched server with nothing offered.

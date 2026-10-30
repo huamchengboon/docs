@@ -18,12 +18,13 @@ Get-DnsServerResourceRecord -ZoneName $zone -RRType A | Where HostName -in 'adfs
 
 ## Make sure the server resolves through itself
 
-A domain controller must list **itself** first in its DNS client settings. In this lab it pointed at `10.0.0.1` (the Hyper-V host), so the DC’s own scripts could not resolve `adfs.example.local` even though its DNS server answered correctly.
+A domain controller must list **itself** first in its DNS client settings. In this lab it pointed at `10.0.0.1` (the Hyper-V host), so the DC’s own scripts could not resolve `adfs.example.local` even though its DNS server answered correctly. After the change, `adfs.example.local` must resolve to `10.0.0.10`.
 
 ```powershell title="PS>"
 Set-DnsClientServerAddress -InterfaceAlias 'Ethernet 2' -ServerAddresses '10.0.0.10','10.0.0.1'
 Clear-DnsClientCache
-Resolve-DnsName adfs.example.local     # must return 10.0.0.10
+
+Resolve-DnsName adfs.example.local
 Resolve-DnsName ignition.example.local
 ```
 

@@ -10,9 +10,13 @@ Two things are required on each client, and one GPO provides both:
 
 ```powershell title="PS>"
 Import-Module GroupPolicy
+
 $name = 'SSO - AD FS Intranet Zone'
 $gpo  = Get-GPO -Name $name -ErrorAction SilentlyContinue
-if (-not $gpo) { $gpo = New-GPO -Name $name -Comment 'Treat AD FS as intranet so browsers send Windows credentials (Kerberos) for SSO' }
+if (-not $gpo) {
+  $gpo = New-GPO -Name $name -Comment 'Treat AD FS as intranet so browsers send Windows credentials (Kerberos) for SSO'
+}
+
 $site = 'adfs.example.local'
 
 $zk = 'HKLM\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMapKey'
@@ -26,6 +30,7 @@ $dom = (Get-ADDomain).DistinguishedName
 if (-not ((Get-GPInheritance -Target $dom).GpoLinks | Where DisplayName -eq $name)) {
   New-GPLink -Name $name -Target $dom -LinkEnabled Yes
 }
+
 gpupdate /force
 ```
 
