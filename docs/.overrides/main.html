@@ -9,3 +9,11 @@
 <title>{{ config.site_name }}</title>
 {% endif %}
 {% endblock %}
+
+{#- Announcement bar, as on the FastAPI documentation. Edit the text when there is news; visitors can dismiss it. -#}
+{% block announce %}
+<a class="announce-link" href="{{ 'windows-server/offline-wsus/server-patching/' | url }}">
+  <span class="twemoji">{% include ".icons/material/new-box.svg" %}</span>
+  New in the Offline WSUS runbook: <strong>patching the WSUS server itself</strong>
+</a>
+{% endblock %}

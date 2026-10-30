@@ -361,6 +361,33 @@ modifications */
 .md-typeset .diagram .ln { stroke: var(--md-default-fg-color--light); stroke-width: 1.6; fill: none; }
 .md-typeset .diagram .lnA { stroke: var(--md-accent-fg-color); stroke-width: 2; fill: none; }
 
+/* External links: arrow icon after the text. extra.js sets data-external-link.
+   Adapted from the FastAPI documentation (https://github.com/fastapi/fastapi, MIT). */
+.md-typeset a[data-external-link]:not(:has(img))::after {
+  content: "";
+  display: inline-block;
+  width: 0.75em;
+  height: 0.75em;
+  margin-left: 0.25em;
+  vertical-align: middle;
+  opacity: 0.55;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6'/%3E%3Cpolyline points='15 3 21 3 21 9'/%3E%3Cline x1='10' y1='14' x2='21' y2='3'/%3E%3C/svg%3E") no-repeat center / contain;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6'/%3E%3Cpolyline points='15 3 21 3 21 9'/%3E%3Cline x1='10' y1='14' x2='21' y2='3'/%3E%3C/svg%3E") no-repeat center / contain;
+}
+.md-typeset a[data-external-link]:hover::after {
+  opacity: 0.85;
+}
+
+/* Announcement bar link, from the FastAPI documentation */
+.md-banner a.announce-link,
+.md-banner a.announce-link:visited {
+  color: var(--md-primary-bg-color);
+}
+.md-banner a.announce-link:hover {
+  color: var(--md-accent-fg-color);
+}
+
 /* Lead paragraph under a page title */
 .md-typeset .lead {
   font-size: 1.05em;

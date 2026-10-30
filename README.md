@@ -6,7 +6,12 @@ Build guides, runbooks and troubleshooting notes, published at
 The site is built with [MkDocs](https://www.mkdocs.org/) and
 [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/). The theme setup
 (palette, navigation tweaks and page titles) is adapted from the
-[uv documentation](https://github.com/astral-sh/uv) under the Apache-2.0 licence.
+[uv documentation](https://github.com/astral-sh/uv) under the Apache-2.0 licence. Top tabs,
+hover tooltips, the announcement bar and external-link icons follow the
+[FastAPI documentation](https://github.com/fastapi/fastapi) (MIT licence).
+
+The glossary behind the hover tooltips is `includes/abbreviations.md`; every page gets it.
+The announcement bar text is in `docs/.overrides/main.html`.
 
 ## Layout
 
