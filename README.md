@@ -10,6 +10,13 @@ The site is built with [MkDocs](https://www.mkdocs.org/) and
 hover tooltips, the announcement bar and external-link icons follow the
 [FastAPI documentation](https://github.com/fastapi/fastapi) (MIT licence).
 
+The theme picker (palette button in the header, or press `T`) and its split-wipe theme
+change are modelled on the switcher at [omarchy.org](https://omarchy.org); the colour
+palettes are the ones published there, from their original theme projects. The code is
+written for this site: `docs/js/theme-picker.js`, `docs/stylesheets/theme-picker.css`, and
+the generated `docs/stylesheets/themes.css`. Each theme is also a Material palette option
+in `mkdocs.yml`, so Material remembers the choice.
+
 The glossary behind the hover tooltips is `includes/abbreviations.md`; every page gets it.
 The announcement bar text is in `docs/.overrides/main.html`.
 

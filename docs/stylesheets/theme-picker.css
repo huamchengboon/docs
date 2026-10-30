@@ -1,0 +1,433 @@
+/*
+ * Theme picker and theme-change animation, modelled on the theme switcher at
+ * https://omarchy.org (its behaviour and look; this code is written for this site).
+ *
+ * The change runs inside document.startViewTransition(). The browser snapshots the
+ * old page, the new theme is applied underneath, and a diagonal slit in the old
+ * snapshot opens from the middle outwards until the new theme fills the screen.
+ */
+
+@property --theme-wipe {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@keyframes theme-split-wipe {
+  from { --theme-wipe: 0px; }
+  to   { --theme-wipe: 80%; }
+}
+
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-group(root),
+::view-transition-image-pair(root),
+::view-transition-group(theme-picker),
+::view-transition-image-pair(theme-picker) {
+  animation: none;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-new(root) {
+  z-index: 0;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-group(theme-picker) {
+  z-index: 2;
+}
+
+::view-transition-old(root),
+::view-transition-old(theme-picker) {
+  --slit: linear-gradient(
+    100deg,
+    #000 0,
+    #000 calc(50% - var(--theme-wipe) + 1px),
+    #0000 calc(50% - var(--theme-wipe) + 1px),
+    #0000 calc(50% + var(--theme-wipe) - 1px),
+    #000 calc(50% + var(--theme-wipe) - 1px),
+    #000 100%
+  );
+  -webkit-mask-image: var(--slit);
+  mask-image: var(--slit);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  animation: theme-split-wipe 0.2s cubic-bezier(0.7, 0, 1, 1) both;
+}
+
+:root.theme-wipe-frosted::view-transition-old(root) {
+  filter: blur(4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root),
+  ::view-transition-old(theme-picker) {
+    animation: none;
+  }
+}
+
+/* No CSS transitions while the colours swap, so nothing fades half-way. */
+.no-transitions *,
+.no-transitions *::before,
+.no-transitions *::after {
+  transition: none !important;
+}
+
+/* Material's own palette toggle stays in the page (it stores the choice) but is hidden. */
+.md-header__option[data-md-component="palette"] {
+  display: none;
+}
+
+/* ---------------------------------------------------------------- picker */
+
+.tp-dimmer {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  background: rgb(0 0 0 / 0.55);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.tp-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 11;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  touch-action: none;
+  view-transition-name: theme-picker;
+  font-family: var(--md-text-font-family);
+}
+
+.tp-backdrop {
+  position: absolute;
+  inset: 0;
+}
+
+.tp-deck {
+  position: relative;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.tp-slot,
+.tp-spacer {
+  width: min(72vw, 46rem);
+}
+
+.tp-slot {
+  position: absolute;
+  transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.tp-spacer {
+  visibility: hidden;
+  aspect-ratio: 16 / 9;
+}
+
+.tp-card {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  pointer-events: auto;
+  --card-dim: 0.55;
+}
+
+.tp-card:hover {
+  --card-dim: 0.78;
+}
+
+/* Slanted frame: a 2.5% lean, the top edge shifted right of the bottom. */
+.tp-frame {
+  background: #71717a;
+  clip-path: polygon(2.5% 0%, 100% 0%, 97.5% 100%, 0% 100%);
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.6);
+}
+
+.tp-front .tp-frame {
+  background: var(--md-accent-fg-color);
+}
+
+.tp-inner {
+  clip-path: polygon(calc(2.5% + 1px) 1px, calc(100% - 1px) 1px, calc(97.5% - 1px) calc(100% - 1px), 1px calc(100% - 1px));
+  background: #000;
+}
+
+.tp-front .tp-inner {
+  clip-path: polygon(calc(2.5% + 3px) 3px, calc(100% - 3px) 3px, calc(97.5% - 3px) calc(100% - 3px), 3px calc(100% - 3px));
+}
+
+.tp-slot:not(.tp-front) .tp-mock {
+  filter: brightness(var(--card-dim));
+}
+
+.tp-name {
+  position: relative;
+  margin-top: 0.4rem;
+  padding: 0.85rem 1rem;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--md-default-fg-color);
+  -webkit-text-stroke: 2px var(--md-default-bg-color);
+  paint-order: stroke fill;
+  transition: filter 0.15s ease-out;
+}
+
+.tp-name:hover {
+  filter: brightness(1.25);
+}
+
+.tp-hint {
+  position: relative;
+  font-size: 0.7rem;
+  color: rgb(255 255 255 / 0.7);
+  letter-spacing: 0.02em;
+}
+
+.tp-arrow {
+  position: absolute;
+  top: 50%;
+  display: flex;
+  width: 2.75rem;
+  height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-50%);
+  border: 1px solid var(--md-default-fg-color--lightest);
+  background: var(--md-default-bg-color);
+  color: var(--md-default-fg-color);
+  cursor: pointer;
+  transition: background-color 0.15s ease-out;
+}
+
+.tp-arrow:hover {
+  background: var(--md-code-bg-color);
+}
+
+.tp-arrow svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  fill: currentColor;
+}
+
+.tp-prev { left: 1.5rem; }
+.tp-next { right: 1.5rem; }
+
+@media (max-width: 600px) {
+  .tp-slot, .tp-spacer { width: min(68vw, 46rem); }
+  .tp-prev { left: 0.75rem; }
+  .tp-next { right: 0.75rem; }
+}
+
+/* ------------------------------------------- miniature page in each card */
+
+.tp-mock {
+  display: flex;
+  flex-direction: column;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--md-default-bg-color);
+  color: var(--md-default-fg-color);
+  text-align: left;
+}
+
+.tp-mock__bar {
+  display: flex;
+  align-items: center;
+  gap: 4%;
+  height: 11%;
+  padding: 0 5%;
+  background: var(--md-primary-fg-color);
+  color: var(--md-primary-bg-color);
+  font-size: clamp(0.5rem, 1.6vw, 0.9rem);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.tp-mock__logo {
+  width: 1.1em;
+  height: 1.1em;
+  border-radius: 0.2em;
+  background: var(--md-accent-fg-color);
+}
+
+.tp-mock__search {
+  margin-left: auto;
+  width: 22%;
+  height: 46%;
+  border-radius: 0.2em;
+  background: var(--md-default-fg-color--lightest);
+}
+
+.tp-mock__tabs {
+  display: flex;
+  gap: 3%;
+  height: 6%;
+  padding: 0 5%;
+  align-items: center;
+  background: var(--md-primary-fg-color);
+}
+
+.tp-mock__tabs span {
+  width: 9%;
+  height: 28%;
+  border-radius: 1px;
+  background: var(--md-primary-bg-color--light);
+  opacity: 0.6;
+}
+
+.tp-mock__tabs span.on {
+  background: var(--md-primary-bg-color);
+  opacity: 1;
+}
+
+.tp-mock__body {
+  display: flex;
+  flex: 1;
+  gap: 5%;
+  padding: 4% 5%;
+}
+
+.tp-mock__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 7%;
+  width: 20%;
+}
+
+.tp-mock__main {
+  display: flex;
+  flex-direction: column;
+  gap: 5%;
+  flex: 1;
+}
+
+.tp-line {
+  height: 0.35rem;
+  min-height: 3px;
+  border-radius: 2px;
+  background: var(--md-default-fg-color--lighter);
+  opacity: 0.55;
+}
+
+.tp-line.accent {
+  background: var(--md-accent-fg-color);
+  opacity: 1;
+}
+
+.tp-title {
+  font-size: clamp(0.65rem, 2.4vw, 1.4rem);
+  font-weight: 300;
+  line-height: 1.1;
+  color: var(--md-default-fg-color);
+}
+
+.tp-code {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 3%;
+  border-radius: 0.25rem;
+  background: var(--md-code-bg-color);
+}
+
+.tp-code div {
+  display: flex;
+  gap: 2%;
+}
+
+.tp-code span {
+  height: 0.32rem;
+  min-height: 3px;
+  border-radius: 2px;
+}
+
+.tp-code .kw { width: 14%; background: var(--md-code-hl-keyword-color); }
+.tp-code .fn { width: 22%; background: var(--md-code-hl-function-color); }
+.tp-code .st { width: 30%; background: var(--md-code-hl-string-color); }
+.tp-code .nm { width: 10%; background: var(--md-code-hl-number-color); }
+.tp-code .tx { width: 18%; background: var(--md-code-fg-color); opacity: 0.6; }
+
+.tp-adm {
+  padding: 2.5% 3%;
+  border-left: 0.2rem solid var(--md-accent-fg-color);
+  border-radius: 0.2rem;
+  background: var(--md-accent-fg-color--transparent);
+}
+
+.tp-adm .tp-line {
+  width: 70%;
+}
+
+.tp-btn {
+  width: 22%;
+  height: 0.9rem;
+  border-radius: 0.2rem;
+  background: var(--md-accent-fg-color);
+}
+
+/* uv Light only sets a few colours and relies on Material's light defaults, which a
+   preview card inside a dark page would not inherit. Spell them out for the cards. */
+.tp-frame[data-md-color-scheme="astral-light"],
+.tp-name[data-md-color-scheme="astral-light"] {
+  --md-default-bg-color: #fff;
+  --md-default-fg-color: rgb(0 0 0 / 0.87);
+  --md-default-fg-color--light: rgb(0 0 0 / 0.54);
+  --md-default-fg-color--lighter: rgb(0 0 0 / 0.32);
+  --md-default-fg-color--lightest: rgb(0 0 0 / 0.07);
+  --md-primary-bg-color: #fff;
+  --md-primary-bg-color--light: rgb(255 255 255 / 0.7);
+  --md-code-bg-color: #f5f5f5;
+  --md-code-fg-color: #36464e;
+  --md-code-hl-keyword-color: #3f6ec6;
+  --md-code-hl-function-color: #a846b9;
+  --md-code-hl-string-color: #1c7d4d;
+  --md-code-hl-number-color: #d52a2a;
+  --md-accent-fg-color--transparent: rgb(222 95 233 / 0.1);
+}
+
+/* Header button that opens the picker */
+.tp-open {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem;
+  margin: 0 0.2rem;
+  border: 0;
+  background: none;
+  color: currentColor;
+  cursor: pointer;
+}
+
+.tp-open svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  fill: currentColor;
+}

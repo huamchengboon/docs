@@ -55,6 +55,51 @@ theme:
       toggle:
         icon: material/brightness-4
         name: Switch to system preference
+    # Extra themes for the theme picker (docs/js/theme-picker.js, docs/stylesheets/themes.css)
+    - media: ""
+      scheme: catppuccin
+    - media: ""
+      scheme: catppuccin-latte
+    - media: ""
+      scheme: ethereal
+    - media: ""
+      scheme: everforest
+    - media: ""
+      scheme: flexoki-light
+    - media: ""
+      scheme: gruvbox
+    - media: ""
+      scheme: hackerman
+    - media: ""
+      scheme: kanagawa
+    - media: ""
+      scheme: last-horizon
+    - media: ""
+      scheme: lumon
+    - media: ""
+      scheme: lupine
+    - media: ""
+      scheme: matte-black
+    - media: ""
+      scheme: miasma
+    - media: ""
+      scheme: nord
+    - media: ""
+      scheme: osaka-jade
+    - media: ""
+      scheme: retro-82
+    - media: ""
+      scheme: ristretto
+    - media: ""
+      scheme: rose-pine
+    - media: ""
+      scheme: solitude
+    - media: ""
+      scheme: tokyo-night
+    - media: ""
+      scheme: vantablack
+    - media: ""
+      scheme: white
 
 markdown_extensions:
   - abbr
@@ -99,10 +144,13 @@ plugins:
 
 # The ?v= tag makes browsers fetch the new file after a change; bump it when either file changes.
 extra_css:
-  - stylesheets/extra.css?v=2026-10-30b
+  - stylesheets/extra.css?v=2026-10-30c
+  - stylesheets/themes.css?v=2026-10-30c
+  - stylesheets/theme-picker.css?v=2026-10-30c
 
 extra_javascript:
   - js/extra.js?v=2026-10-30
+  - js/theme-picker.js?v=2026-10-30c
 
 extra:
   social:
