@@ -273,6 +273,13 @@ modifications */
   background-color: var(--md-code-bg-color);
 }
 
+/* Keyboard keys: uv's dark palette leaves Material's light key colours, so white text sat on a white key */
+[data-md-color-scheme="astral-dark"] {
+  --md-typeset-kbd-color: #4a2b5a;
+  --md-typeset-kbd-accent-color: #5c3a6e;
+  --md-typeset-kbd-border-color: #160a1d;
+}
+
 /* Numbered click markers that match the red boxes on screenshots */
 .md-typeset .mk {
   display: inline-grid;
