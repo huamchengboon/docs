@@ -29,7 +29,7 @@ Build guides, runbooks and troubleshooting notes, each written from a working la
 
     ---
 
-    Install PostgreSQL and TimescaleDB and connect them to Ignition for historian data, with the original PDF write-ups.
+    Use PostgreSQL with TimescaleDB as the Ignition Tag Historian database, on Windows or Ubuntu, with automatic compression and retention, maintenance queries and a SQL Server migration outline.
 
     [:octicons-arrow-right-24: Open the guide](ignition/timescaledb/index.md)
 

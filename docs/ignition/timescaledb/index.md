@@ -1,114 +1,86 @@
-# Using-TimeScaleDB-with-Ignition
+# TimescaleDB with Ignition
 
-This might be outdated, so some things may have changed with timescale and you will have to adjust accordingly.
+Use PostgreSQL with the TimescaleDB extension as the database behind Ignition's Tag Historian. The historian table becomes a *hypertable* that compresses and deletes old data by itself, so the database needs no maintenance plan.
+{ .lead }
 
-## Install Postgresql
+<span class="tag">PostgreSQL</span> <span class="tag">TimescaleDB 2.13</span> <span class="tag">Ignition 8.1</span> <span class="tag">Historian</span> <span class="tag">Windows or Ubuntu</span>
 
-1. [Download Postgres](https://www.postgresql.org/download/)
-2. Run the install file.
+!!! note "What this guide was tested on"
 
-## Install TimescaleDB
+    The steps come from two documents kept on this site: the [Setup PDF](TimescaleDB%20+%20Ignition%20Setup.pdf) (Ubuntu 22.04, PostgreSQL 14.10, TimescaleDB 2.13.1, Ignition 8.1.37 LTS, pgAdmin 4 8.2, February 2024) and the [Documentation PDF](TimescaleDB%20Documentation.pdf) (Windows, PostgreSQL 16, TimescaleDB 2.13.1). It has not been re-run on newer versions. Check [Newer TimescaleDB versions](hypertable.md#newer-timescaledb-versions) before using a version after 2.13.
 
-TimescaleDB is an extension for PostgreSQL database.  Follow the installation guide bellow for getting the extension installed on your computer.
+## Why PostgreSQL with TimescaleDB
 
-[Installation Guide and Download](https://docs.timescale.com/latest/getting-started/)
+The usual alternative is Microsoft SQL Server, and it has two problems for a historian:
 
-1. Download TimescaleDB installer zip file and extract the `timescaledb` folder to the desktop.
+- **Maintenance.** The SQL Server log file grows until it fills the disk unless someone builds and runs a maintenance plan. Express edition also limits CPU and database size, and Standard edition needs a paid licence.
+- **Slow queries over time.** Performance drops as history piles up, roughly after a year of data for 5000 or more tags.
 
-2. Add Postgres file path to system environment variables.
+PostgreSQL with TimescaleDB is free for commercial use. Two background jobs replace the maintenance plan: one compresses old data, the other deletes data past the retention age. These only work on a hypertable, which is why the extension is needed. A BRIN index keeps queries fast as the table grows to tens or hundreds of GB.
 
-   1. Search Environment Variables and click `Edit the system environment variables`
+### A small test of the difference
 
-   2. When the system properties windows comes up, make sure it's on the `Advanced` tab  and click the `Environment Variables` button.
+The [Documentation PDF](TimescaleDB%20Documentation.pdf) compares the two on one Windows laptop (Intel Core i7-1165G7, 16 GB RAM), running `SELECT * FROM stocks_real_time;` on 5 million rows, averaged over 10 runs.
 
-   3. Click on the `Path` variable in the System variables table and click the `Edit...` button.
+| | SQL Server | PostgreSQL + TimescaleDB | Difference |
+| --- | --- | --- | --- |
+| Query time | 43.6 s (± 12 s) | 3.302 s (± 1.5 s) | 92% less time |
+| Storage | 762 MB | 61 MB | 92% smaller |
 
-   4. Double-click the next empty row in the table and paste in the path to the bin folder in the PostgreSQL installation folder.
+It was called a preliminary result, and the query is a plain full-table read on a stock-price table, not an Ignition history query. Treat it as a rough guide.
 
-      Example path:
+## Pick your path
 
-      > C:\Program Files\PostgreSQL\11\bin
+<div class="grid cards" markdown>
 
-   5. Click `OK`.
+-   :material-microsoft-windows:{ .lg .middle } **Windows**
 
-3. Stop the PostgreSQL service.
+    ---
 
-4. Right click on `setup.exe` within the extracted timescaledb folder and click **Run as administrator**. A command prompt will appear.
+    PostgreSQL with `winget` or the installer, then the TimescaleDB setup program.
 
-5. Press `y` to tune the PostgresDB installation
+    [:octicons-arrow-right-24: Install on Windows](install-windows.md){ .card-main }
 
-6. When prompted, paste in the path to the data folder in the PostgreSQL installation folder and hit `enter`
+-   :material-ubuntu:{ .lg .middle } **Ubuntu 22.04**
 
-   Example path:
+    ---
 
-   > C:\Program Files\PostgreSQL\11\data
+    PostgreSQL and TimescaleDB from `apt`, tuned with `timescaledb-tune`, with pgAdmin.
 
-7. Continue to type `y` and then `enter` until no longer prompted to do so. 
+    [:octicons-arrow-right-24: Install on Ubuntu](install-ubuntu.md){ .card-main }
 
-   * If the installation is not successful due to an "access denied" error, make sure you ran the setup.exe as administrator.
+</div>
 
-## Setup TimescaleDB for Ignition
+## The whole job, in order
 
-Now we need to go into postgres and setup timescaledb for use with the ignition tables.  Use a database editor to run the following SQL commands.  pgAdmin comes with postgres and can be used.
+The order matters. Ignition must create its history table before it can be converted, so the Ignition steps and the database steps alternate.
 
-Create a database for ignition to use or use your existing ignition postgres database.  Use this database when performing the following commands.
+| Step | Where | Page |
+| --- | --- | --- |
+| 1. Install PostgreSQL and TimescaleDB | Database host | [Windows](install-windows.md) or [Ubuntu](install-ubuntu.md) |
+| 2. Create the user and database, allow remote connections | Database host | [Database access](database-access.md) |
+| 3. Update the JDBC driver, add the connection, turn off partitioning and pruning | Ignition Gateway | [Ignition setup](ignition-setup.md) |
+| 4. Make Ignition create `sqlth_1_data` | Ignition Designer | [Ignition setup](ignition-setup.md#4-let-ignition-create-the-history-table) |
+| 5. Convert the table to a hypertable, add compression, retention and indexes | Database host | [Hypertable setup](hypertable.md) |
+| 6. Turn the history provider back on and enable history on all tags | Ignition Gateway and Designer | [Hypertable setup](hypertable.md#6-turn-history-back-on) |
+| 7. Check that the jobs run, then maintain | Database host | [Maintenance](maintenance.md) |
+| Moving existing history from SQL Server | Both | [Migrate from SQL Server](migrate-from-mssql.md) |
 
-### Load the extension into the database.
+## Before you start
 
-```sql
-CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;
-```
+- **Two machines** (virtual or physical): the database host and the Ignition Gateway. One machine also works for a test.
+- **Internet access** on the database host while installing.
+- **Knowledge:** Ignition 8, basic networking, and basic SQL. You do not need to know PostgreSQL.
+- **Downloads and credits:** the Ubuntu steps are based on the [Timescale Linux installation guide](https://docs.timescale.com/self-hosted/latest/install/installation-linux/). The [Setup PDF](TimescaleDB%20+%20Ignition%20Setup.pdf) is © 2024 Agile Automation Technology, LLC, by Peter Tiagunov.
 
-### Create the hyper table.
+!!! danger "Two shortcuts in the original PDFs that you should not copy"
 
-```plsql
-SELECT
-	* 
-FROM 
-	create_hypertable('sqlth_1_data','t_stamp', if_not_exists => True, chunk_time_interval => 86400000, migrate_data => True);
-```
+    - **`trust` authentication from `0.0.0.0/0`** in `pg_hba.conf` lets any machine that can reach port 5432 connect as any database user with no password. [Database access](database-access.md#let-the-ignition-gateway-connect) shows how to allow only the Gateway.
+    - **The sample password `12345`** for the `ignition` user. Use a long random password.
 
-### Setup the hypertable 
+## Where the PDFs fit
 
-Add compression to the table.
+This site has the same material as the two PDFs in written form, with corrections and the order of steps made explicit. The PDFs add screenshots of every Ignition and pgAdmin screen. Each page below points to the matching figure.
 
-```plsql
-ALTER TABLE sqlth_1_data SET (timescaledb.compress, timescaledb.compress_orderby = 't_stamp DESC', timescaledb.compress_segmentby = 'tagid'); 
-```
-
-Create a function that will help translate your time stamp columns format for TimescaleDB.
-
-```plsql
-CREATE OR REPLACE FUNCTION unix_now() returns BIGINT LANGUAGE SQL STABLE as $$ SELECT (extract(epoch from now())*1000)::bigint $$;
-```
-
-Set integer now function
-
-```plsql
-SELECT set_integer_now_func('sqlth_1_data', 'unix_now');
-```
-
-Add compress chunks policy
-
-~~SELECT add_compress_chunks_policy('sqlth_1_data', CAST ('604800000' AS INTEGER));~~
-```plsql
-SELECT add_compression_policy('sqlth_1_data', compress_after => 604800000);
-```
-
-~~**IMPORTANT** If you are using the enterprise version of timescale, you can run the following command to automatically drop chunks older than the specified cutoff.~~
-Enterprise version is no longer required.
-
-~~SELECT add_drop_chunks_policy('sqlth_1_data', CAST ('2592000000' AS BIGINT)); # 30 days~~
-```plsql
-SELECT add_retention_policy('sqlth_1_data', drop_after => 2592000000); # 30 days
-```
-
-~~Otherwise, you must manually run the following query on a schedule to re-create the same functionality.~~
-
-~~SELECT drop_chunks(CAST ('2592000000' AS BIGINT),'sqlth_1_data'); #30 days~~
-
-
-## Downloads
-
-- [TimescaleDB + Ignition Setup (PDF)](TimescaleDB%20+%20Ignition%20Setup.pdf)
-- [TimescaleDB Documentation (PDF)](TimescaleDB%20Documentation.pdf)
+- [TimescaleDB + Ignition Setup (PDF, 17 pages)](TimescaleDB%20+%20Ignition%20Setup.pdf)
+- [TimescaleDB Documentation (PDF, 4 pages)](TimescaleDB%20Documentation.pdf)

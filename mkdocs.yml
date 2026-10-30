@@ -202,7 +202,16 @@ nav:
               - The page, as a script: ignition/windows-sso/appendix/view-script.md
               - Files and paths: ignition/windows-sso/appendix/files.md
               - References: ignition/windows-sso/appendix/references.md
-      - TimescaleDB with Ignition: ignition/timescaledb/index.md
+      - TimescaleDB with Ignition:
+          - Overview: ignition/timescaledb/index.md
+          - Install on Windows: ignition/timescaledb/install-windows.md
+          - Install on Ubuntu: ignition/timescaledb/install-ubuntu.md
+          - Database access: ignition/timescaledb/database-access.md
+          - Ignition setup: ignition/timescaledb/ignition-setup.md
+          - Hypertable setup: ignition/timescaledb/hypertable.md
+          - Maintenance and queries: ignition/timescaledb/maintenance.md
+          - Migrate from SQL Server: ignition/timescaledb/migrate-from-mssql.md
+          - References: ignition/timescaledb/references.md
 
 validation:
   omitted_files: warn
