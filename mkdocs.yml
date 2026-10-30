@@ -97,11 +97,12 @@ markdown_extensions:
 plugins:
   - search
 
+# The ?v= tag makes browsers fetch the new file after a change; bump it when either file changes.
 extra_css:
-  - stylesheets/extra.css
+  - stylesheets/extra.css?v=2026-10-30
 
 extra_javascript:
-  - js/extra.js
+  - js/extra.js?v=2026-10-30
 
 extra:
   social:
